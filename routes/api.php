@@ -21,6 +21,7 @@ use App\Http\Controllers\Auth\SignInController;
 
 Route::group(['prefix'=>'auth'],function(){
     Route::post('signin',SignInController::class);
+    Route::post('register', [SignInController::class,'register']);
     Route::post('signout',SignOutController::class);
     Route::get('me', MeController::class);
 
