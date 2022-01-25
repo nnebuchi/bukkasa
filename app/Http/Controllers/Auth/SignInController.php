@@ -15,7 +15,8 @@ class SignInController extends Controller
         if(!$token = auth()->attempt($request->only('email','password'))){
             return response(null,401);
         }
-        return response()->json(compact('token'));
+        $user = User::where('email',$request->email)->first();
+        return response()->json(compact('token','user'));
     }
 
     /**
@@ -26,9 +27,9 @@ class SignInController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
+            'fullname' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:6',
+            'password' => 'required|string|min:6',
         ]);
 
         if ($validator->fails()) {
@@ -37,7 +38,7 @@ class SignInController extends Controller
 
         $user = User::create(array_merge(
             $validator->validated(),
-            ['password' => bcrypt($request->password),'dob'=>$request->dob,'role'=>$request->role]
+            ['password' => bcrypt($request->password),'dob'=>$request->dob,'role'=>$request->role,'name'=>$request->fullname]
         ));
 
         return response()->json([
