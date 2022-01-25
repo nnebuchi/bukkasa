@@ -17,7 +17,9 @@ class MeController extends Controller
        $user = $request->user();
      return response()->json([
          'email' =>$user->email,
-         'name' =>$user->name
+         'name' =>$user->name,
+         'role' =>$user->role,
+         'dob'=>$user->dob
      ]);
     }
 }
