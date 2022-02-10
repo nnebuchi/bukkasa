@@ -3,23 +3,47 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MeController extends Controller
 {
-    //
-    public function __construct()
+
+    // public function __construct()
+    // {
+    //      $this->middleware(['auth:api']);
+    // }
+    public function __invoke()
     {
-         $this->middleware(['auth:api']);
+
+        return response()->json(auth()->user());
     }
-    public function __invoke(Request $request)
+
+    private function respondWithToken($token)
     {
-       $user = $request->user();
-     return response()->json([
-         'email' =>$user->email,
-         'name' =>$user->name,
-         'role' =>$user->role,
-         'dob'=>$user->dob
-     ]);
+        return response()->json([
+            'token' => $token,
+            'access_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
+    }
+
+
+    public function logout()
+    {
+        auth()->logout();
+        return response()->json(['msg' => 'User successfully logged out']);
+    }
+
+
+    public function refresh()
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
+
+    public function me()
+    {
+        return response()->json(auth()->user());
     }
 }
